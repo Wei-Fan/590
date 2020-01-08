@@ -1,0 +1,45 @@
+N = 10;
+K = 50  ;
+k = 0.01;
+f = @(theta1,phi1,theta2,phi2) K / ((sin(theta1)*cos(phi1)-sin(theta2)*cos(phi2))^2+(sin(theta1)*sin(phi1)-sin(theta2)*sin(phi2))^2+(cos(theta1)-cos(theta2))^2)^(5/2);
+isdone = 0;
+cnt = 0;
+theta = rand(N,1)*pi;
+phi = rand(N,1)*2*pi;
+while(isdone==0&&cnt<1000)
+    theta_new = theta;
+    phi_new = phi;
+   ready = zeros(1,N);
+   for i=1:N
+       F_theta = 0;
+       F_phi = 0;
+       for j=1:N
+          if i==j
+              continue;
+          end
+          F_theta = F_theta + f(theta(i),phi(i),theta(j),phi(j)) * (cos(theta(i))-cos(theta(j))) * (-sin(theta(i)));
+          F_phi = F_phi + f(theta(i),phi(i),theta(j),phi(j)) * ((sin(theta(i))*cos(phi(i))-sin(theta(j))*cos(phi(j)))*(-sin(theta(i))*sin(phi(i)))+(sin(theta(i))*sin(phi(i))-sin(theta(j))*sin(phi(j)))*sin(theta(i))*cos(phi(i)));
+       end
+       
+       dtheta = k * F_theta
+       dphi = k * F_phi
+       theta_new(i) = theta(i) + dtheta;
+       phi_new(i) = phi(i) + dtheta;
+       if (abs(dtheta)<0.1&&abs(dphi)<0.1)
+           ready(i) = 1;
+       end
+   end
+   if (sum(ready) == N)
+       isdone = 1;
+   end
+   cnt = cnt + 1;   
+end
+cnt;
+theta;
+phi;
+x=sin(theta).*cos(phi);
+y=sin(theta).*sin(phi);
+z=cos(theta);
+scatter3(x,y,z,'filled')
+hold on
+sphere
